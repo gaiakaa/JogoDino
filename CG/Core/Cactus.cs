@@ -7,7 +7,7 @@ namespace DinoGame
         private Shader shader;
         public Vector3 Position { get; set; }
         private Vector3 color = new(1f, 0f, 0f);
-        public float Scale { get; set; } = 0.5f;
+        public float Scale { get; set; } = 0.5f; // tamano do cacto
 
         public Cactus(Shader shader, Vector3 position)
         {
