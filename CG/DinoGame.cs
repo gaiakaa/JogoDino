@@ -19,6 +19,8 @@ namespace DinoGame
         private float cactusSpawnTimer = 0f;
         private float points = 0f; // fiz uma pontucao pelo tempo jogado, pra poder mudar o cenario d dia pra noitee75
         private bool isNight = false;
+        private Background3D backgroundNuvens;
+        private Background3D backgroundMontanhas;
 
         public DinoGame(GameWindowSettings gws, NativeWindowSettings nws)
             : base(gws, nws) { }
@@ -37,6 +39,9 @@ namespace DinoGame
             ground = new Ground(shader);
 
             cactuses.Add(new Cactus(shader, new Vector3(5, 0.5f, 0)));
+            //PARALLAAAAAAXXXX
+            backgroundNuvens = new Background3D(shader, new Vector3(0f, 2.5f, -4f), new Vector3(1f, 1f, 1f), 1.0f, false);
+            backgroundMontanhas = new Background3D(shader, new Vector3(0f, -1f, -5f), new Vector3(0.3f, 0.25f, 0.2f), 0.5f, true);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -70,6 +75,10 @@ namespace DinoGame
                 isNight = true;
             else
                 isNight = false;
+
+            backgroundNuvens.Update((float)args.Time);
+            backgroundMontanhas.Update((float)args.Time);
+
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -105,7 +114,11 @@ namespace DinoGame
             foreach (var cactus in cactuses)
                 cactus.Render(view, projection);
 
+            backgroundMontanhas.Render(view, projection);
+            backgroundNuvens.Render(view, projection);
+
             SwapBuffers();
         }
     }
+
 }
