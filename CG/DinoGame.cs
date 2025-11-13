@@ -4,6 +4,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DinoGame
 {
@@ -16,9 +17,12 @@ namespace DinoGame
 
         private List<Cactus> cactuses = new();
         private float cactusSpawnTimer = 0f;
+        private float points = 0f; // fiz uma pontucao pelo tempo jogado, pra poder mudar o cenario d dia pra noitee75
+        private bool isNight = false;
 
         public DinoGame(GameWindowSettings gws, NativeWindowSettings nws)
             : base(gws, nws) { }
+
 
         protected override void OnLoad()
         {
@@ -39,6 +43,8 @@ namespace DinoGame
         {
             base.OnUpdateFrame(args);
 
+            Title = $"Dino Game - Pontos: {(int)points}"; //OS PONTOS TAO NA JANELA KJGKGJKGH
+
             if (KeyboardState.IsKeyDown(Keys.Escape))
                 Close();
 
@@ -57,12 +63,37 @@ namespace DinoGame
                 if (cactuses[i].Position.X < -6)
                     cactuses.RemoveAt(i);
             }
+
+            points += 10f * (float)args.Time; //Contagem d Pointes
+
+            if (points % 1000 >= 500) //Troca Dia pra noite a cada 500 pointes
+                isNight = true;
+            else
+                isNight = false;
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
 
+            float cyclePoints = points % 1000;
+            float t = cyclePoints < 500
+                ? cyclePoints / 500f
+                : 1f - ((cyclePoints - 500) / 500f);
+
+            var dayColor = new Color4(0.53f, 0.81f, 0.92f, 1.0f); // Day
+            var nightColor = new Color4(0.05f, 0.05f, 0.1f, 1.0f); // Night
+
+            float Lerp(float a, float b, float t) => a + (b - a) * t;
+
+            var currentColor = new Color4(
+                Lerp(dayColor.R, nightColor.R, t),
+                Lerp(dayColor.G, nightColor.G, t),
+                Lerp(dayColor.B, nightColor.B, t),
+                1.0f
+            );
+
+            GL.ClearColor(currentColor);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             Matrix4 view = camera.GetViewMatrix();
