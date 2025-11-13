@@ -6,7 +6,7 @@ namespace DinoGame
 {
     public class Shader
     {
-        public int Handle { get; private set; } //AAAAA Teste de push OUOUOUOUOUU 
+        public int Handle { get; private set; } //AAAAA Testeee de commit e push ouououo
 
         public Shader(string vertexPath, string fragmentPath)
         {
