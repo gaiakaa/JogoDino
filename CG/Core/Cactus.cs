@@ -7,7 +7,8 @@ namespace DinoGame
         private Shader shader;
         public Vector3 Position { get; set; }
         private Vector3 color = new(1f, 0f, 0f);
-        public float Scale { get; set; } = 0.5f; // tamano do cacto
+        public float Scale { get; set; } = 0.2f; // tamano do cacto
+        public Vector3 Size => new Vector3(Scale, Scale, Scale); //colisoa
 
         public Cactus(Shader shader, Vector3 position)
         {
@@ -27,7 +28,7 @@ namespace DinoGame
         {
             shader.Use();
 
-            Matrix4 model = Matrix4.CreateScale(Scale) * Matrix4.CreateTranslation(Position + new Vector3(0, Scale / 2f - 0.5f, 0));
+            Matrix4 model = Matrix4.CreateScale(Scale) * Matrix4.CreateTranslation(Position + new Vector3(0, Scale / 2f - 0.5f, 0)); //DESENHP CACCTO
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("view", view);
             shader.SetMatrix4("projection", projection);

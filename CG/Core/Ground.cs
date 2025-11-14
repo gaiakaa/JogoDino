@@ -5,7 +5,7 @@ namespace DinoGame
     public class Ground
     {
         private Shader shader;
-        private Vector3 color = new(0.4f, 0.25f, 0.1f);
+        private Vector3 color = new(0.3f, 0.3f, 0.2f);
 
         public Ground(Shader shader)
         {

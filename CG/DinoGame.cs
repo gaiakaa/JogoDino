@@ -14,6 +14,7 @@ namespace DinoGame
         private Player player = null!;
         private Ground ground = null!;
         private Shader shader = null!;
+        private bool TaMorto = false;
 
         private List<Cactus> cactuses = new();
         private float cactusSpawnTimer = 0f;
@@ -48,7 +49,13 @@ namespace DinoGame
         {
             base.OnUpdateFrame(args);
 
-            Title = $"Dino Game - Pontos: {(int)points}"; //OS PONTOS TAO NA JANELA KJGKGJKGH
+            if (TaMorto)
+            {
+                Title = "DINO SE FUDEU 💀";
+                return;  //mata o cria e faz ele para de se mexer (vo pensar em um jeito pra resetar
+            }
+
+            Title = $"Dino Game - Pontos: {(int)points}"; //OS PONTOS TAO NA JANELA KJGKGJKGH (KKKKKKKKKK MAS OQ É ISSO)
 
             if (KeyboardState.IsKeyDown(Keys.Escape))
                 Close();
@@ -67,6 +74,18 @@ namespace DinoGame
                 cactuses[i].Update(args.Time);
                 if (cactuses[i].Position.X < -6)
                     cactuses.RemoveAt(i);
+            }
+
+            if (!TaMorto)
+            {
+                foreach (var cactus in cactuses)
+                {
+                    if (CheckCollision(player, cactus))
+                    {
+                        TaMorto = true;
+                        break;
+                    }
+                }
             }
 
             points += 10f * (float)args.Time; //Contagem d Pointes
@@ -118,6 +137,18 @@ namespace DinoGame
             backgroundNuvens.Render(view, projection);
 
             SwapBuffers();
+        }
+
+        private bool CheckCollision(Player p, Cactus c)
+        {
+            Vector3 pMin = p.Position - p.Size * 0.5f;
+            Vector3 pMax = p.Position + p.Size * 0.5f;
+
+            Vector3 cMin = c.Position - c.Size * 0.5f;
+            Vector3 cMax = c.Position + c.Size * 0.5f;
+
+            return (pMin.X <= cMax.X && pMax.X >= cMin.X) &&
+                   (pMin.Y <= cMax.Y && pMax.Y >= cMin.Y);
         }
     }
 

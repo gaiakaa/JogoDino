@@ -11,7 +11,8 @@ namespace DinoGame
         private Vector3 color;
         private float velocityY = 0f;
         private bool isGrounded = true;
-        public float Scale { get; set; } = 1.0f; //TamanhodoDINOO
+        public float Scale { get; set; } = 0.7f; //TamanhodoDINOO
+        public Vector3 Size => new Vector3(Scale, Scale, Scale); //Colisao
 
         public Player(Shader shader, Vector3 position, Vector3 color)
         {
