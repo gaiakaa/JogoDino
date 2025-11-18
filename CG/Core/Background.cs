@@ -15,18 +15,24 @@ namespace DinoGame
         private readonly int vbo;
         private readonly Vector3 color;
         private readonly float speed;
-        private float offset;
-
+        private readonly Vector3 scale;
+        private readonly int vertexCount;
+        private readonly int tileCount;
+        private const float baseWidth = 30f;
         public Vector3 Position { get; private set; }
 
-        public Background3D(Shader shader, Vector3 position, Vector3 color, float speed, bool isMountain = false)
+        public Background3D(Shader shader, Vector3 position, Vector3 color, float speed, Vector3 scale, int tileCount = 3, bool isMountain = false)
         {
             this.shader = shader;
             this.Position = position;
             this.color = color;
             this.speed = speed;
+            this.scale = scale;
+            this.tileCount = Math.Max(1, tileCount);
+
             //chekagem mucho loka e loopp
-            float[] vertices = isMountain ? CreateMountainVertices() : CreateFlatVertices();
+            float[] vertices = isMountain ? CreateMountainVertices() : CreateCloudVertices();
+            vertexCount = vertices.Length / 3;
 
             vao = GL.GenVertexArray();
             vbo = GL.GenBuffer();
@@ -40,11 +46,15 @@ namespace DinoGame
         }
         public void Update(float deltaTime)
         {
-            offset += speed * deltaTime;
-            Position = new Vector3(Position.X - speed * deltaTime, Position.Y, Position.Z);
 
-            if (Position.X < -20f)
-                Position = new Vector3(20f, Position.Y, Position.Z);
+            Position += new Vector3(-speed * deltaTime, 0f, 0f);
+
+            float tileWidth = baseWidth * scale.X;
+            float fullWidth = tileWidth * tileCount;
+            // se saiu à esquerda, aparece  na direita (assim nao explode)
+
+            if (Position.X <= -fullWidth)
+                Position = new Vector3(Position.X + fullWidth, Position.Y, Position.Z);
         }
 
         public void Render(Matrix4 view, Matrix4 projection)
@@ -53,12 +63,18 @@ namespace DinoGame
             shader.SetMatrix4("view", view);
             shader.SetMatrix4("projection", projection);
 
-            Matrix4 model = Matrix4.CreateTranslation(Position);
-            shader.SetMatrix4("model", model);
-            shader.SetVector3("color", color);
-
-            GL.BindVertexArray(vao);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 9);
+            float tileWidth = baseWidth * scale.X;
+            
+            // desenha cada tile em sequência (tileCount cópias)
+            for (int i = 0; i < tileCount; i++)
+            {
+                var worldPos = new Vector3(Position.X + i * tileWidth, Position.Y, Position.Z);
+                Matrix4 model = Matrix4.CreateScale(scale) * Matrix4.CreateTranslation(worldPos);
+                shader.SetMatrix4("model", model);
+                shader.SetVector3("color", color);
+                GL.BindVertexArray(vao);
+                GL.DrawArrays(PrimitiveType.Triangles, 0, vertexCount);
+            }
         }
         //fazer montanha pontuda
         private float[] CreateMountainVertices()
@@ -70,7 +86,7 @@ namespace DinoGame
                  -5f,  0f, 0f,
 
                  -5f,  0f, 0f,
-                 0f,  5f, 0f,
+                 0f,  2f, 0f,
                  5f,  0f, 0f,
 
                  5f,  0f, 0f,
@@ -79,17 +95,17 @@ namespace DinoGame
             };
         }
         //Fundo (Pra nuvem)
-        private float[] CreateFlatVertices()
+        private float[] CreateCloudVertices()
         {
             return new float[]
                 {
-                    -15f, 0f, 0f,
-                    15f, 0f, 0f,
-                    15f, 5f, 0f,
+                    -2f, 0f, 0f,
+                     2f, 0f, 0f,
+                     2f, 1f, 0f,
 
-                    -15f, 0f, 0f,
-                    15f, 5f, 0f,
-                    -15f, 5f, 0f
+                    -2f, 0f, 0f,
+                     2f, 1f, 0f,
+                    -2f, 1f, 0f
                 };
         }
     }

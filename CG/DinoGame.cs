@@ -20,8 +20,12 @@ namespace DinoGame
         private float cactusSpawnTimer = 0f;
         private float points = 0f; // fiz uma pontucao pelo tempo jogado, pra poder mudar o cenario d dia pra noitee75
         private bool isNight = false;
-        private Background3D backgroundNuvens;
-        private Background3D backgroundMontanhas;
+        
+        private Background3D mountainBack = null!;
+        private Background3D mountainFront = null!;
+        private Background3D backgroundNuvens = null!;
+
+        private List<Background3D> cloudList = new();
 
         public DinoGame(GameWindowSettings gws, NativeWindowSettings nws)
             : base(gws, nws) { }
@@ -41,8 +45,17 @@ namespace DinoGame
 
             cactuses.Add(new Cactus(shader, new Vector3(5, 0.5f, 0)));
             //PARALLAAAAAAXXXX
-            backgroundNuvens = new Background3D(shader, new Vector3(0f, 2.5f, -4f), new Vector3(1f, 1f, 1f), 1.0f, false);
-            backgroundMontanhas = new Background3D(shader, new Vector3(0f, -1f, -5f), new Vector3(0.3f, 0.25f, 0.2f), 0.5f, true);
+            cloudList = new List<Background3D>
+            {
+              new Background3D(shader,new Vector3(3f, 1.5f, -3f), new Vector3(1f, 1f, 1f), 1.2f, new Vector3(0.45f), tileCount: 6, false),
+              new Background3D(shader,new Vector3( 0f, 1.2f, -3f), new Vector3(1f), 0.8f, new Vector3(0.30f), tileCount: 4, false),
+              new Background3D(shader,new Vector3(-2f, 2.0f, -3f), new Vector3(1f), 0.5f, new Vector3(0.20f), tileCount: 2, false),
+
+            };
+            
+            mountainBack = new Background3D(shader, new Vector3(0f, -1f, -4.01f), new Vector3(0.3f, 0.25f, 0.2f), 0.5f, new Vector3(1.5f), tileCount: 4, isMountain: true);
+            
+            mountainFront = new Background3D(shader, new Vector3(0f, -1f, -4f), new Vector3(0.4f, 0.3f, 0.25f), 0.8f, new Vector3(0.9f), tileCount: 5, isMountain: true);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -51,7 +64,7 @@ namespace DinoGame
 
             if (TaMorto)
             {
-                Title = "DINO SE FUDEU 💀";
+                Title = "DINO Caiu"; //Palavra no titulo [e sacanagem :)
                 return;  //mata o cria e faz ele para de se mexer (vo pensar em um jeito pra resetar
             }
 
@@ -95,8 +108,11 @@ namespace DinoGame
             else
                 isNight = false;
 
-            backgroundNuvens.Update((float)args.Time);
-            backgroundMontanhas.Update((float)args.Time);
+            foreach (var cloud in cloudList)
+                cloud.Update((float)args.Time);
+
+            mountainBack.Update((float)args.Time);
+            mountainFront.Update((float)args.Time);
 
         }
 
@@ -127,14 +143,18 @@ namespace DinoGame
             Matrix4 view = camera.GetViewMatrix();
             Matrix4 projection = camera.GetProjectionMatrix(Size.X / (float)Size.Y);
 
+            mountainBack.Render(view, projection);
+            mountainFront.Render(view, projection);
+
+            foreach (var cloud in cloudList)
+                cloud.Render(view, projection);
+
             ground.Render(view, projection);
             player.Render(view, projection);
 
             foreach (var cactus in cactuses)
                 cactus.Render(view, projection);
 
-            backgroundMontanhas.Render(view, projection);
-            backgroundNuvens.Render(view, projection);
 
             SwapBuffers();
         }
