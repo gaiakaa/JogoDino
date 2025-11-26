@@ -54,5 +54,12 @@ namespace DinoGame
 
             Utils.DrawCube();
         }
+
+        public void Reset()
+        { 
+            Position = new Vector3(0, 0.5f, 0);
+            velocityY = 0f;
+            isGrounded = true;
+        }
     }
 }

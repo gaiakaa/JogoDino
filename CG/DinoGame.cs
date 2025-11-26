@@ -39,7 +39,7 @@ namespace DinoGame
             GL.Enable(EnableCap.DepthTest);
 
             shader = new Shader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
-            camera = new Camera(new Vector3(0, 2, 6), Vector3.Zero);
+            camera = new Camera(new Vector3(0, 2, 6), new Vector3(0, 1, 0));
             player = new Player(shader, new Vector3(0, 0.5f, 0), new Vector3(0, 1, 0));
             ground = new Ground(shader);
 
@@ -62,9 +62,14 @@ namespace DinoGame
         {
             base.OnUpdateFrame(args);
 
+
             if (TaMorto)
             {
-                Title = "DINO Caiu"; //Palavra no titulo [e sacanagem :)
+                Title = "DINO Caiu - aperte enter para reiniciar"; //Palavra no titulo [e sacanagem :)
+                if (KeyboardState.IsKeyPressed(Keys.Enter))
+                {
+                    ResetGame()s
+                }
                 return;  //mata o cria e faz ele para de se mexer (vo pensar em um jeito pra resetar
             }
 
@@ -169,6 +174,19 @@ namespace DinoGame
 
             return (pMin.X <= cMax.X && pMax.X >= cMin.X) &&
                    (pMin.Y <= cMax.Y && pMax.Y >= cMin.Y);
+        }
+
+        private void ResetGame()
+        {
+            TaMorto = false;
+            points = 0;
+            cactusSpawnTimer = 0;
+            cactuses.Clear();
+            isNight = false;
+
+            player.Reset();
+
+
         }
     }
 
