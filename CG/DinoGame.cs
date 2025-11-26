@@ -39,7 +39,7 @@ namespace DinoGame
             GL.Enable(EnableCap.DepthTest);
 
             shader = new Shader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
-            camera = new Camera(new Vector3(0, 2, 6), new Vector3(0, 1, 0));
+            camera = new Camera(new Vector3(0, 2, 6), new Vector3(0, 2, 0));
             player = new Player(shader, new Vector3(0, 0.5f, 0), new Vector3(0, 1, 0));
             ground = new Ground(shader);
 
@@ -68,7 +68,7 @@ namespace DinoGame
                 Title = "DINO Caiu - aperte enter para reiniciar"; //Palavra no titulo [e sacanagem :)
                 if (KeyboardState.IsKeyPressed(Keys.Enter))
                 {
-                    ResetGame()s
+                    ResetGame();
                 }
                 return;  //mata o cria e faz ele para de se mexer (vo pensar em um jeito pra resetar
             }
@@ -187,6 +187,12 @@ namespace DinoGame
             player.Reset();
 
 
+        }
+
+        protected override void OnResize(ResizeEventArgs e)
+        {
+            base.OnResize(e);
+            GL.Viewport(0, 0, Size.X, Size.Y);
         }
     }
 
