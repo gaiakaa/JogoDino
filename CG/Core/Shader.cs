@@ -48,5 +48,10 @@ namespace DinoGame
             int location = GL.GetUniformLocation(Handle, name);
             GL.Uniform3(location, data);
         }
+        public void SetFloat(string name, float data)
+        {
+            int location = GL.GetUniformLocation(Handle, name);
+            GL.Uniform1(location, data);
+        }
     }
 }

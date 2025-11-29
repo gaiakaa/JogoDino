@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -17,10 +18,12 @@ namespace DinoGame
         private bool TaMorto = false;
 
         private List<Cactus> cactuses = new();
+        private Random rdm = new Random();
+        private float nextSpawnTime = 2.0f; // tempo primeiro cacto
         private float cactusSpawnTimer = 0f;
-        private float points = 0f; // fiz uma pontucao pelo tempo jogado, pra poder mudar o cenario d dia pra noitee75
+        private float points = 0f; // fiz uma pontucao pelo tempo jogado, pra poder mudar o cenario d dia pra noitee
         private bool isNight = false;
-        
+
         private Background3D mountainBack = null!;
         private Background3D mountainFront = null!;
         private Background3D backgroundNuvens = null!;
@@ -43,7 +46,7 @@ namespace DinoGame
             player = new Player(shader, new Vector3(0, 0.5f, 0), new Vector3(0, 1, 0));
             ground = new Ground(shader);
 
-            cactuses.Add(new Cactus(shader, new Vector3(5, 0.5f, 0)));
+            cactuses.Add(new Cactus(shader, new Vector3(5, 0.4f, 0)));
             //PARALLAAAAAAXXXX
             cloudList = new List<Background3D>
             {
@@ -81,10 +84,11 @@ namespace DinoGame
             player.Update(args.Time, KeyboardState);
 
             cactusSpawnTimer += (float)args.Time;
-            if (cactusSpawnTimer > 2.5f)
+            if (cactusSpawnTimer > nextSpawnTime)
             {
                 cactusSpawnTimer = 0;
-                cactuses.Add(new Cactus(shader, new Vector3(5, 0.5f, 0)));
+                cactuses.Add(new Cactus(shader, new Vector3(5, 0.4f, 0)));
+                nextSpawnTime = (float)(rdm.NextDouble() * (3.5 - 1.5) + 1.5);
             }
 
             for (int i = cactuses.Count - 1; i >= 0; i--)
@@ -123,6 +127,7 @@ namespace DinoGame
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+            
             base.OnRenderFrame(args);
 
             float cyclePoints = points % 1000;
@@ -142,8 +147,13 @@ namespace DinoGame
                 1.0f
             );
 
+
             GL.ClearColor(currentColor);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            float brightnessFactor = 1.0f - (t * 0.7f);
+            shader.Use();
+            shader.SetFloat("brightness", brightnessFactor); //seta o shader de noite e dia
 
             Matrix4 view = camera.GetViewMatrix();
             Matrix4 projection = camera.GetProjectionMatrix(Size.X / (float)Size.Y);

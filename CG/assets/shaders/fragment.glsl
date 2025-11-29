@@ -2,8 +2,10 @@
 
 out vec4 FragColor;
 uniform vec3 color;
+uniform float brightness;
 
 void main()
 {
-    FragColor = vec4(color, 1.0);
+    vec3 finalColor = color * brightness;
+    FragColor = vec4(finalColor, 1.0);
 }
